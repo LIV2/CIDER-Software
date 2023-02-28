@@ -71,77 +71,79 @@ int main(int argc, char *argv[])
 
         selectSlot(config->programSlot);
 
+        if (config->op != OP_NONE) {
+          if (!(*controlRegister & BONUSEN_BIT)) {
 
-        if (!(*controlRegister & BONUSEN_BIT)) {
+            UWORD manufacturerId, deviceId;
 
-          UWORD manufacturerId, deviceId;
+            bool check_device = kick_flash_init(&manufacturerId,&deviceId);
 
-          bool check_device = kick_flash_init(&manufacturerId,&deviceId);
+            if (check_device == false && config->op != OP_IDENTIFY) {
 
-          if (check_device == false && config->op != OP_IDENTIFY) {
+              printf("Error: Unknown Flash device Manufacturer: %04X Device: %04X\n", manufacturerId, deviceId);
+              printf("Check that ROM overlay is switched off and try again.\n");
 
-            printf("Error: Unknown Flash device Manufacturer: %04X Device: %04X\n", manufacturerId, deviceId);
-            printf("Check that ROM overlay is switched off and try again.\n");
+            } else {
 
-          } else {
+              switch (config->op) {
 
-            switch (config->op) {
-
-              case OP_IDENTIFY:
-                printf("Manufacturer: %04X, Device: %04X\n",manufacturerId, deviceId);
-              break;
-
-              case OP_VERIFY:
-                if (config->source == SOURCE_ROM) {
-                  rc = (verifyBank((ULONG *)0xF80000,config->programBank,ROM_512K)) ? 0 : 5;
-                } else {
-                  rc = (verifyFile(config->ks_filename,config->programBank)) ? 0 : 5;
-                }
+                case OP_IDENTIFY:
+                  printf("Manufacturer: %04X, Device: %04X\n",manufacturerId, deviceId);
                 break;
 
-              case OP_ERASE_BANK:
-                erase_bank(config->programBank,config->programSlot);
-                break;
+                case OP_VERIFY:
+                  if (config->source == SOURCE_ROM) {
+                    rc = (verifyBank((ULONG *)0xF80000,config->programBank,ROM_512K)) ? 0 : 5;
+                  } else {
+                    rc = (verifyFile(config->ks_filename,config->programBank)) ? 0 : 5;
+                  }
+                  break;
 
-              case OP_ERASE_CHIP:
-                erase_chip();
-                break;
-
-              case OP_PROGRAM:
-                if (config->source == SOURCE_ROM) {
+                case OP_ERASE_BANK:
                   erase_bank(config->programBank,config->programSlot);
-                  printf("Copying Kickstart ROM to bank %d\n",(int)config->programBank >> 19);
-                  copyBufToFlash((void *)0xF80000,config->programBank,ROM_512K,config->skipVerify);
-                } else {
-                  ULONG romSize = 0;
-                  printf("Flashing kick file %s\n",config->ks_filename);
-                  if ((romSize = getFileSize(config->ks_filename)) != 0) {
-                    if (romSize == ROM_256K || romSize == ROM_512K || romSize == ROM_1M) {
-                      if (romSize == ROM_1M) {
-                        if (config->programBank & ODD_BANK) {
-                          config->programBank &= ~(ODD_BANK); // Force alignment of 1MB ROM to Bank 0 or 2
-                          printf("WARN: Cannot write 1MB ROM to odd banks, forcing alignment to bank %d.\n", (int)config->programBank >> 19);
+                  break;
+
+                case OP_ERASE_CHIP:
+                  erase_chip();
+                  break;
+
+                case OP_PROGRAM:
+                  if (config->source == SOURCE_ROM) {
+                    erase_bank(config->programBank,config->programSlot);
+                    printf("Copying Kickstart ROM to bank %d\n",(int)config->programBank >> 19);
+                    copyBufToFlash((void *)0xF80000,config->programBank,ROM_512K,config->skipVerify);
+                  } else {
+                    ULONG romSize = 0;
+                    printf("Flashing kick file %s\n",config->ks_filename);
+                    if ((romSize = getFileSize(config->ks_filename)) != 0) {
+                      if (romSize == ROM_256K || romSize == ROM_512K || romSize == ROM_1M) {
+                        if (romSize == ROM_1M) {
+                          if (config->programBank & ODD_BANK) {
+                            config->programBank &= ~(ODD_BANK); // Force alignment of 1MB ROM to Bank 0 or 2
+                            printf("WARN: Cannot write 1MB ROM to odd banks, forcing alignment to bank %d.\n", (int)config->programBank >> 19);
+                          }
+                          erase_bank(config->programBank + ROM_512K,config->programSlot);
                         }
-                        erase_bank(config->programBank + ROM_512K,config->programSlot);
+                        erase_bank(config->programBank,config->programSlot);
+                        copyFileToFlash(config->ks_filename,config->programBank,romSize,config->skipVerify);
+                      } else {
+                        printf("Bad file size, 256K/512K/1M ROM required.\n");
+                        rc = 5;
                       }
-                      erase_bank(config->programBank,config->programSlot);
-                      copyFileToFlash(config->ks_filename,config->programBank,romSize,config->skipVerify);
-                    } else {
-                      printf("Bad file size, 256K/512K/1M ROM required.\n");
-                      rc = 5;
                     }
                   }
-                }
-                break;
-
-                case OP_NONE:
-                  if (config->flash_ide_rom == false) usage();
                   break;
+
+                  case OP_NONE:
+                    if (config->flash_ide_rom == false) usage();
+                    break;
+              }
             }
+          } else {
+            printf("Bonus RAM must be disabled to program Flash.\n");
+            rc = 5;
           }
-        } else {
-          printf("Bonus RAM must be disabled to program Flash.");
-          rc = 5;
+
         }
 
       } else {
