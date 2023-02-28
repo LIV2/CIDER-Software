@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
 
                 for (int i=0; i<romSize; i++) {
 
-                  progress = (i*100)/romSize;
+                  progress = (i*100)/(romSize-1);
 
                   if (lastProgress != progress) {
                     fprintf(stdout,"\b\b\b\b%3d%%",progress);
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
                 fprintf(stdout,"Vefifying IDE ROM:     ");
                 for (int i=0; i<romSize; i++) {
 
-                  progress = (i*100)/romSize;
+                  progress = (i*100)/(romSize-1);
 
                   if (lastProgress != progress) {
                     fprintf(stdout,"\b\b\b\b%3d%%",progress);
