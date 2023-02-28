@@ -3,7 +3,7 @@ PROJECT=mounter
 #CFLAGS=-lamiga -nostartfiles -mcrt=clib2 -mcpu=68000 -c
 INCLUDE=/opt/amiga/m68k-amigaos/ndk-include
 CC=vc
-CFLAGS=+aos68k -cpu=68000 -c99 -lamiga -c -Os -dontwarn=153 -dontwarn=368
+CFLAGS=-cpu=68000 -c99 -lamiga -c -Os -dontwarn=153 -dontwarn=368 -I$$VBCC/targets/m68k-amigaos/include
 AS=vasmm68k_mot
 ASFLAGS=-Fhunk -I$(INCLUDE) -quiet -align
 LINKER=vlink
