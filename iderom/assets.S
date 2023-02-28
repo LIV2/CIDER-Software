@@ -2,4 +2,4 @@
   incbin "obj/bootnibbles"
 
   section DEVICE
-  incbin "cider.device"
+  incbin "mounter/obj/mounter.hunk"

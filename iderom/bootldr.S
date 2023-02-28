@@ -7,7 +7,7 @@
 VERSION      = 1
 REVISION     = 1
 DRIVEROFFSET = $2000
-
+        dc.w  $00
 *******  DiagStart  **************************************************
 DiagStart
         ; This is the DiagArea structure whose relative offset from
@@ -60,7 +60,6 @@ DiagEntry
         move.l  a1,RT_ENDSKIP(a4)
         lea.l   DevName(pc),a1
         move.l  a1,RT_NAME(a4)
-        lea.l   IdString(pc),a1
         move.l  a1,RT_IDSTRING(a4)
         lea.l   Init(pc),a1
         move.l  a1,RT_INIT(a4)
@@ -112,6 +111,7 @@ Init:   movem.l d2-d7/a2-a6,-(sp)
         move.l  MyConfigDev(PC),a1
         move.w  cd_Rom+er_InitDiagVec(a1),d1  ; Get rom offset
         ror.l   #8,d1                         ; Divide by 8 for Z2 Nibble-wide
+        andi.l  #1,d1
         move.l  #DRIVEROFFSET,d0              ; Add to Driver offset
         add.l   d1,d0
 
@@ -155,8 +155,6 @@ Init:   movem.l d2-d7/a2-a6,-(sp)
 .found  
         moveq.l  #0,d1
         jsr      _LVOInitResident(A6)
-        tst.l    d0
-        beq.s    .err
 .done
         moveq.l #0,d0             ; Report "failure" as the chainloader romtag is no longer needed
         movem.l (sp)+,d2-d7/a2-a6
@@ -167,8 +165,6 @@ Init:   movem.l d2-d7/a2-a6,-(sp)
 DevName
         dc.b    'Chainloader',0                 ; Name string
         align 1
-IdString
-        dc.b    'Chainloader',0
 DosName
         dc.b    'dos.library',0                 ; DOS library name
         align 1     ; word align
