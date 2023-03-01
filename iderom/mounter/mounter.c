@@ -1025,7 +1025,7 @@ int main() {
 
 int mount_drives(struct ConfigDev *cd)
 {
-	char real_device_name[] = "liv2ride.device";
+	char real_device_name[] = "ide.device";
 	struct MountStruct ms;
 	int ret = 0;
 

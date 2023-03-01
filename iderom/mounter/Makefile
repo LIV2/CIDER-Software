@@ -22,12 +22,19 @@ ASMSRCS = $(ASMOBJ:%.o=%.S)
 SRCS = $(OBJ:%.o=%.c)
 
 obj/%.o: %.S
+	mkdir -p obj
 	$(AS) $(ASFLAGS) $< -o $@
 
 obj/%.o: %.c
+	mkdir -p obj
 	${CC} -o $@ $(CFLAGS) $<
 
-obj/mounter.hunk: obj/romtag.o obj/mounter.o obj/endrom.o liv2ride.device
+../ide_device/source/ide.device:
+	$(MAKE) -C ../ide_device/source all
+
+obj/mounter.hunk: obj/romtag.o obj/mounter.o obj/endrom.o ../ide_device/source/ide.device
 	$(LINKER) $(LINKFLAGS) -o $@ $^
+
 clean:
+	$(MAKE) -C ../ide_device/source clean
 	-rm -rf obj/*

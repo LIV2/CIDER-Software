@@ -5,3 +5,4 @@ at
 **/*.out
 **/*.device
 **/*.hunk
+**/*.adf

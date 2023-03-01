@@ -1,0 +1,3 @@
+[submodule "iderom/ide_device"]
+	path = iderom/ide_device
+	url = git@github.com:LIV2/at_apollo_device.git
