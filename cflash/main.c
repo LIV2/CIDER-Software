@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
                   // Verify Extended ROM
                   if (config->ext_source == SOURCE_ROM) {
-                    rc = (verifyBank((ULONG *)0xF00000,FLASH_BANK_0,ROM_512K)) ? 0 : 5;
+                    rc = (verifyBank((ULONG *)0xF00000,FLASH_BANK_0,ROM_256K)) ? 0 : 5;
                   } else if (config->ext_source == SOURCE_FILE) {
                     rc = (verifyFile(config->ext_filename,FLASH_BANK_0)) ? 0 : 5;
                   }
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
                   if (config->ext_source == SOURCE_ROM) {
                     erase_bank(FLASH_BANK_0,config->programSlot);
                     printf("Copying Extended ROM\n");
-                    copyBufToFlash((void *)0xF00000,FLASH_BANK_0,ROM_512K,config->skipVerify);
+                    copyBufToFlash((void *)0xF00000,FLASH_BANK_0,ROM_256K,config->skipVerify);
                   } else if (config->ext_source == SOURCE_FILE) {
                     ULONG romSize = 0;
                     printf("Flashing ext file %s\n",config->ext_filename);
