@@ -40,20 +40,30 @@ struct Config* configure(int argc, char *argv[]) {
   if (config == NULL) return NULL;
 
   config->op          = OP_NONE;
-  config->source      = SOURCE_NONE;
+  config->kick_source = SOURCE_NONE;
+  config->ext_source  = SOURCE_NONE;
   config->skipVerify  = false;
-  config->programBank = FLASH_BANK_1;
   config->programSlot = 0;
+  config->eraseBank   = 0;
 
   for (int i=1; i<argc; i++) {
     if (argv[i][0] == '-') {
       switch(argv[i][1]) {
 
         case 'c':
-          if (config->source == SOURCE_NONE) {
-            config->source = SOURCE_ROM;
+          if (config->kick_source == SOURCE_NONE) {
+            config->kick_source = SOURCE_ROM;
           } else {
-            printf("Only one of -c or -f can be specified.\n");
+            printf("Only one of -c or -k can be specified.\n");
+            error = true;
+          }
+          break;
+
+        case 'C':
+          if (config->ext_source == SOURCE_NONE) {
+            config->ext_source = SOURCE_ROM;
+          } else {
+            printf("Only one of -C or -x can be specified.\n");
             error = true;
           }
           break;
@@ -72,24 +82,57 @@ struct Config* configure(int argc, char *argv[]) {
           break;
 
         case 'e':
-          if (config-> op == OP_NONE) {
+          if (config->op == OP_NONE) {
             config->op = OP_ERASE_BANK;
+            if (i+1 < argc) {
+              switch (argv[i+1][0]) {
+                case 'k':
+                  config->eraseBank = FLASH_BANK_1;
+                  break;
+                
+                case 'x':
+                  config->eraseBank = FLASH_BANK_0;
+                  break;
+                
+                default:
+                  error = true;
+                  printf("Invalid bank selected.\n");
+                  break;
+              }
+              i++;
+            } else {
+              error = true;
+              printf("Must specify a bank to erase.\n");
+            }
           } else {
             error = true;
             printf("Only one operation can be performed at a time.\n");
           }
           break;
 
-        case 'F':
-        case 'f':
-          if (config->source == SOURCE_NONE) {
+        case 'k':
+        case 'K':
+          if (config->kick_source == SOURCE_NONE) {
             if (i+1 < argc) {
-              config->source = SOURCE_FILE;
+              config->kick_source = SOURCE_FILE;
               config->ks_filename = argv[i+1];
               i++;
             }
           } else{
-            printf("Only one of -c or -f can be specified.\n");
+            printf("Only one of -c or -k can be specified.\n");
+            error = true;
+          }
+          break;
+
+        case 'x':
+          if (config->ext_source == SOURCE_NONE) {
+            if (i+1 < argc) {
+              config->ext_source = SOURCE_FILE;
+              config->ext_filename = argv[i+1];
+              i++;
+            }
+          } else {
+            printf("Only one of -C or -x can be specified.\n");
             error = true;
           }
           break;
@@ -108,14 +151,6 @@ struct Config* configure(int argc, char *argv[]) {
             error = true;
             printf("Only one operation can be performed at a time.\n");
           }
-          break;
-
-        case '0':
-          config->programBank = FLASH_BANK_0;
-          break;
-
-        case '1':
-          config->programBank = FLASH_BANK_1;
           break;
 
         case 's':
@@ -141,7 +176,7 @@ struct Config* configure(int argc, char *argv[]) {
           break;
 
         case 'v':
-          if (config-> op == OP_NONE) {
+          if (config->op == OP_NONE) {
             config->op = OP_VERIFY;
           } else {
             error = true;
@@ -153,15 +188,15 @@ struct Config* configure(int argc, char *argv[]) {
   }
 
   if (config->op == OP_NONE && config->flash_ide_rom == false) {
-    if (config->source == SOURCE_NONE) {
+    if (config->kick_source == SOURCE_NONE && config->ext_source == SOURCE_NONE) {
       error = true;
     } else {
       config->op = OP_PROGRAM;
     }
   }
 
-  if (config->op == OP_VERIFY && config->source == SOURCE_NONE) {
-    printf("Must specify filename or -c to compare against ROM\n");
+  if (config->op == OP_VERIFY && config->kick_source == SOURCE_NONE && config->ext_source == SOURCE_NONE) {
+    printf("Must specify filename or -c / -C to compare against Kick / Ext ROM\n");
     error = true;
   }
 
@@ -177,16 +212,16 @@ struct Config* configure(int argc, char *argv[]) {
  * @brief Print the usage information
 */
 void usage() {
-    printf("\nUsage: cflash [-fieEvV] [-c|-f <kickstart rom>] [-0|1]  -s [0|1]\n\n");
+    printf("\nUsage: cflash [-iEvV] [-e k|x] [-c|-k <kickstart rom>] [-C|-x <extended rom>] [-I <ide rom>] -s [0|1]\n\n");
     printf("       -c                  -  Copy ROM to Flash.\n");
-    printf("       -f <kickstart file> -  Kickstart to Flash or verify.\n");
+    printf("       -C                  -  Copy Extended ROM to Flash.\n");
+    printf("       -k <kickstart file> -  Kickstart to Flash or verify.\n");
+    printf("       -x <ext rom file>   -  Extended ROM to Flash or verify.\n");
     printf("       -i                  -  Print Flash device id.\n");
     printf("       -I <ide rom>        -  Flash IDE ROM.\n");
-    printf("       -e                  -  Erase bank.\n");
+    printf("       -e [k|x]            -  Erase [k]ickstart or e[x]t rom bank.\n");
     printf("       -E                  -  Erase chip.\n");
     printf("       -v                  -  Verify bank against file or ROM\n");
     printf("       -V                  -  Skip verification after programming.\n");
-    printf("       -0                  -  Select bank 0 - $FO Extended ROM.\n");
-    printf("       -1                  -  Select bank 1 - $F8 Kickstart ROM.\n");
     printf("       -s [0|1]            -  Select kickstart slot to work on.\n");
 }

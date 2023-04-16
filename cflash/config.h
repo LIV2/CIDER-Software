@@ -34,12 +34,14 @@ typedef enum {
 } source_type;
 
 struct Config {
-  ULONG          programBank;
   UBYTE          programSlot;
+  ULONG          eraseBank;
   operation_type op;
-  source_type    source;
+  source_type    kick_source;
+  source_type    ext_source;
   bool           skipVerify;
   char           *ks_filename;
+  char           *ext_filename;
   bool           flash_ide_rom;
   char           *ide_rom_filename;
 };
