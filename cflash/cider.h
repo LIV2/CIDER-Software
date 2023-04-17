@@ -15,6 +15,9 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-#define SET_BANKBIT 0x5000
-#define CLR_BANKBIT 0x4000
+#define SET_BANKBIT 0x9000
+#define CLR_BANKBIT 0x8000
+
 #define BONUSEN_BIT 0x2000
+#define FLASHEN_BIT 0x4000
+#define BANKSEL_BIT 0x8000

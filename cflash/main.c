@@ -69,9 +69,17 @@ int main(int argc, char *argv[])
 
         controlRegister = cd->cd_BoardAddr;
 
-        selectSlot(config->programSlot); // Set the high/low bank select bit for the flash
 
         if (config->op != OP_NONE) {
+          // Check that Kick Flash is disabled
+
+          if (*controlRegister & FLASHEN_BIT) {
+            printf("Kick flash must be switched off to program\n");
+            rc = 5;
+            goto exit;
+          }
+
+          selectSlot(config->programSlot); // Set the high/low bank select bit for the flash
           // Check that BonusRAM has not been activated yet by AddRam or the bootrom
           if (!(*controlRegister & BONUSEN_BIT)) {
 
@@ -265,6 +273,8 @@ int main(int argc, char *argv[])
   } else {
     usage();
   }
+
+exit:
 
   if (config)        FreeMem(config,sizeof(struct Config));
   if (ExpansionBase) CloseLibrary((struct Library *)ExpansionBase);
