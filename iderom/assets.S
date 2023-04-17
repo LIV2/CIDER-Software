@@ -2,4 +2,4 @@
   incbin "obj/bootnibbles"
 
   section DEVICE
-  incbin "mounter/obj/mounter.hunk"
+  incbin "ide_device/liv2ride.device"
