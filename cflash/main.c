@@ -63,6 +63,8 @@ int main(int argc, char *argv[])
   printf("CIDER FlashROM tool\n");
 
   struct Config *config;
+  struct Task *task = FindTask(0);
+  SetTaskPri(task,20);
   if ((config = configure(argc,argv)) != NULL) {
     if ((ExpansionBase = (struct ExpansionBase *)OpenLibrary("expansion.library",0)) != NULL) {
 
@@ -429,6 +431,8 @@ void copyBufToFlash(ULONG *source, ULONG destination, ULONG romSize, bool skipVe
 
   fprintf(stdout,"Writing:     ");
   fflush(stdout);
+  kick_flash_unlock_bypass(); // Enter unlock bypass mode
+
   for (ULONG i=0; i<byteCount; i+=2) {
     sourcePtr = ((void *)source + (i % romSize)); // Loop the source address around when programming 256K
     progress = i*100/(byteCount-2);
@@ -439,9 +443,11 @@ void copyBufToFlash(ULONG *source, ULONG destination, ULONG romSize, bool skipVe
         lastProgress = progress;
     }
 
-    kick_flash_writeWord(destination+i,*sourcePtr);
+    kick_flash_bypass_program(destination+i,*sourcePtr);
 
   }
+
+  kick_flash_unlock_bypass_reset(); // Return to read mode
   printf("\n");
   if (skipVerify == false) {
     verifyBank(source,destination,romSize);

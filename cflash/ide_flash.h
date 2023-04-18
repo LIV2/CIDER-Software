@@ -24,10 +24,8 @@
 
 void ide_flash_unlock_sdp();
 void ide_flash_erase_chip();
-void ide_flash_command(UBYTE);
 void ide_flash_writeByte(UWORD, UBYTE);
 bool ide_flash_init(UBYTE *, UBYTE *, ULONG *);
-void ide_flash_poll(UWORD);
 void ide_flash_erase_block(UWORD);
 
 #endif

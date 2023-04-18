@@ -32,6 +32,10 @@ enum {
   BOTTOM
 } flash_bootbank;
 
+
+static inline void kick_flash_poll(ULONG address);
+static inline void kick_flash_command(UWORD command);
+
 /** kick_flash_writeWord
  *
  * @brief Write a word to the Flash
@@ -42,7 +46,7 @@ void kick_flash_writeWord(ULONG address, UWORD data) {
   address &= (FLASH_SIZE-1);
   kick_flash_unlock_sdp();
   kick_flash_command(CMD_WORD_PROGRAM);
-  *(UWORD *)(flashbase + address) = data;
+  *(volatile UWORD *)(flashbase + address) = data;
   kick_flash_poll(address);
 
   return;
@@ -53,8 +57,8 @@ void kick_flash_writeWord(ULONG address, UWORD data) {
  * @brief send a command to the Flash
  * @param command
 */
-void kick_flash_command(UWORD command) {
-  *(UWORD *)(flashbase + ADDR_CMD_STEP_1) = command;
+static inline void kick_flash_command(UWORD command) {
+  *(volatile UWORD *)(flashbase + ADDR_CMD_STEP_1) = command;
 
   return;
 }
@@ -64,8 +68,8 @@ void kick_flash_command(UWORD command) {
  * @brief Send the SDP command sequence
 */
 void kick_flash_unlock_sdp() {
-  *(UWORD *)(flashbase + ADDR_CMD_STEP_1) = CMD_SDP_STEP_1;
-  *(UWORD *)(flashbase + ADDR_CMD_STEP_2) = CMD_SDP_STEP_2;
+  *(volatile UWORD *)(flashbase + ADDR_CMD_STEP_1) = CMD_SDP_STEP_1;
+  *(volatile UWORD *)(flashbase + ADDR_CMD_STEP_2) = CMD_SDP_STEP_2;
 
   return;
 }
@@ -88,7 +92,7 @@ void kick_flash_erase_chip() {
  * @brief Poll the status bits at address, until they indicate that the operation has completed.
  * @param address Address to poll
 */
-void kick_flash_poll(ULONG address) {
+static inline void kick_flash_poll(ULONG address) {
   address &= (FLASH_SIZE-1);
   volatile UWORD *read1 = ((void *)flashbase + address);
   volatile UWORD *read2 = ((void *)flashbase + address);
@@ -110,8 +114,8 @@ bool kick_flash_init(UWORD *manuf, UWORD *devid) {
   kick_flash_unlock_sdp();
   kick_flash_command(CMD_ID_ENTRY);
 
-  manufId  = *(UWORD *)flashbase;
-  deviceId = *(UWORD *)(flashbase + 2);
+  manufId  = *(volatile UWORD *)flashbase;
+  deviceId = *(volatile UWORD *)(flashbase + 2);
 
   kick_flash_command(CMD_CFI_ID_EXIT);
 
@@ -149,7 +153,7 @@ void kick_flash_erase_block(ULONG address) {
   kick_flash_unlock_sdp();
   kick_flash_command(CMD_ERASE);
   kick_flash_unlock_sdp();
-  *(UWORD *)(flashbase + address) = CMD_ERASE_BLOCK;
+  *(volatile UWORD *)(flashbase + address) = CMD_ERASE_BLOCK;
 
   kick_flash_poll(address);
 }
@@ -198,4 +202,38 @@ void kick_flash_erase_bank(int bank) {
       kick_flash_erase_block(block);
     }
   }
+}
+
+/** kick_flash_unlock_bypass
+ * 
+ * @brief Sends UNLOCK BYPASS command to flash
+*/
+void kick_flash_unlock_bypass() {
+  kick_flash_unlock_sdp();
+  kick_flash_command(CMD_UNLOCK_BYPASS);
+}
+
+/** kick_flash_unlock_bypass_reset
+ * 
+ * @brief Sends UNLOCK BYPASS RESET command to flash returning it to read mode
+*/
+void kick_flash_unlock_bypass_reset() {
+  kick_flash_unlock_sdp();
+  kick_flash_command(CMD_UNLOCK_BYPASS_RESET);
+  *(volatile UWORD *)(flashbase) = 0;
+}
+
+/** kick_flash_bypass_program
+ *
+ * @brief Write a word to the Flash when in bypass mode
+ * @param address Address to write to
+ * @param data The word to write
+*/
+void kick_flash_bypass_program(ULONG address, UWORD data) {
+  address &= (FLASH_SIZE-1);
+  kick_flash_command(CMD_UNLOCK_BYPASS_PROGRAM);
+  *(volatile UWORD *)(flashbase + address) = data;
+  kick_flash_poll(address);
+
+  return;
 }

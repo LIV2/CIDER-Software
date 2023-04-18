@@ -24,12 +24,13 @@
 
 void kick_flash_unlock_sdp();
 void kick_flash_erase_chip();
-void kick_flash_command(UWORD);
 void kick_flash_writeWord(ULONG, UWORD);
 bool kick_flash_init(UWORD *, UWORD *);
-void kick_flash_poll(ULONG);
 void kick_flash_reset();
 void kick_flash_erase_bank(int);
 void kick_flash_erase_block(ULONG);
+void kick_flash_unlock_bypass();
+void kick_flash_unlock_bypass_reset();
+void kick_flash_bypass_program(ULONG address, UWORD data);
 
 #endif

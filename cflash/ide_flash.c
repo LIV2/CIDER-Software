@@ -26,6 +26,9 @@
 
 ULONG ide_flashBase;
 
+static inline void ide_flash_command(UBYTE);
+static inline void ide_flash_poll(UWORD);
+
 /** ide_flash_writeByte
  *
  * @brief Write a byte to the Flash
@@ -37,7 +40,7 @@ void ide_flash_writeByte(UWORD address, UBYTE data) {
   address <<= 1;
   ide_flash_unlock_sdp();
   ide_flash_command(CMD_BYTE_PROGRAM);
-  *(UBYTE *)(ide_flashBase + address) = data;
+  *(volatile UBYTE *)(ide_flashBase + address) = data;
   ide_flash_poll(address);
 
   return;
@@ -48,8 +51,8 @@ void ide_flash_writeByte(UWORD address, UBYTE data) {
  * @brief send a command to the Flash
  * @param command
 */
-void ide_flash_command(UBYTE command) {
-  *(UBYTE *)(ide_flashBase + ADDR_CMD_STEP_1) = command;
+static inline void ide_flash_command(UBYTE command) {
+  *(volatile UBYTE *)(ide_flashBase + ADDR_CMD_STEP_1) = command;
 
   return;
 }
@@ -59,8 +62,8 @@ void ide_flash_command(UBYTE command) {
  * @brief Send the SDP command sequence
 */
 void ide_flash_unlock_sdp() {
-  *(UBYTE *)(ide_flashBase + ADDR_CMD_STEP_1) = CMD_SDP_STEP_1;
-  *(UBYTE *)(ide_flashBase + ADDR_CMD_STEP_2) = CMD_SDP_STEP_2;
+  *(volatile UBYTE *)(ide_flashBase + ADDR_CMD_STEP_1) = CMD_SDP_STEP_1;
+  *(volatile UBYTE *)(ide_flashBase + ADDR_CMD_STEP_2) = CMD_SDP_STEP_2;
 
   return;
 }
@@ -83,7 +86,7 @@ void ide_flash_erase_chip() {
  * @brief Poll the status bits at address, until they indicate that the operation has completed.
  * @param address Address to poll
 */
-void ide_flash_poll(UWORD address) {
+static inline void ide_flash_poll(UWORD address) {
   address &= (FLASH_SIZE-1);
   address <<= 1;
   volatile UBYTE *read1 = ((void *)ide_flashBase + address);
@@ -109,8 +112,8 @@ bool ide_flash_init(UBYTE *manuf, UBYTE *devid, ULONG *flashBase) {
   ide_flash_unlock_sdp();
   ide_flash_command(CMD_ID_ENTRY);
 
-  manufId  = *(UBYTE *)ide_flashBase;
-  deviceId = *(UBYTE *)(ide_flashBase + 2);
+  manufId  = *(volatile UBYTE *)ide_flashBase;
+  deviceId = *(volatile UBYTE *)(ide_flashBase + 2);
 
   ide_flash_command(CMD_CFI_ID_EXIT);
 

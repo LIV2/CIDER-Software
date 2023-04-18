@@ -1,6 +1,6 @@
 PROJECT=cflash
 CC=m68k-amigaos-gcc
-CFLAGS=-lamiga -mcrt=nix13 -mcpu=68000 -Wall -Wno-pointer-sign -Os -fomit-frame-pointer
+CFLAGS=-lamiga -mcrt=nix13 -mcpu=68000 -Wall -Wno-pointer-sign -O3 -fomit-frame-pointer
 .PHONY:	clean all
 all:	$(PROJECT)
 

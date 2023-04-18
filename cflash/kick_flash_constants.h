@@ -34,15 +34,18 @@
 #define ADDR_CMD_STEP_1  (0x555 << 1)
 #define ADDR_CMD_STEP_2  (0x2AA << 1)
 
-#define CMD_SDP_STEP_1   0xAA
-#define CMD_SDP_STEP_2   0x55
-#define CMD_WORD_PROGRAM 0xA0
-#define CMD_ERASE        0x80
-#define CMD_ERASE_BLOCK  0x30
-#define CMD_ERASE_CHIP   0x10
-#define CMD_ID_ENTRY     0x90
-#define CMD_CFI_ENTRY    0x98
-#define CMD_CFI_ID_EXIT  0xF0
-#define CMD_READ_RESET   0xF0
+#define CMD_SDP_STEP_1            0xAA
+#define CMD_SDP_STEP_2            0x55
+#define CMD_WORD_PROGRAM          0xA0
+#define CMD_ERASE                 0x80
+#define CMD_ERASE_BLOCK           0x30
+#define CMD_ERASE_CHIP            0x10
+#define CMD_ID_ENTRY              0x90
+#define CMD_CFI_ENTRY             0x98
+#define CMD_CFI_ID_EXIT           0xF0
+#define CMD_READ_RESET            0xF0
+#define CMD_UNLOCK_BYPASS         0x20
+#define CMD_UNLOCK_BYPASS_PROGRAM 0xA0
+#define CMD_UNLOCK_BYPASS_RESET   0x90
 
 #endif
