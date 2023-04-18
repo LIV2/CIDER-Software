@@ -38,6 +38,8 @@
 #define IDE_PROD_ID    6
 #define IDE_ROM_OFFSET 0x0
 
+#define CFLASH_VER 0
+
 struct Library *DosBase;
 struct ExecBase *SysBase;
 struct ExpansionBase *ExpansionBase = NULL;
@@ -50,6 +52,7 @@ int main(int argc, char *argv[])
 {
   SysBase = *((struct ExecBase **)4UL);
   DosBase = OpenLibrary("dos.library",0);
+  ULONG hw_ver;
 
   int rc = 0;
 
@@ -66,6 +69,18 @@ int main(int argc, char *argv[])
       struct ConfigDev *cd = NULL;
 
       if ((cd = (struct ConfigDev*)FindConfigDev(NULL,MANUF_ID,PROD_ID))) {
+
+        hw_ver = cd->cd_Rom.er_SerialNumber;
+
+        if (hw_ver > CFLASH_VER) {
+          printf("A newer version of cflash is needed for this CIDER firmware version.\n");
+          rc = 0;
+          goto exit;
+        } else if (hw_ver < CFLASH_VER) {
+          printf("The CIDER firmware must be upgraded to be compatible with this version of cflash\n");
+          rc = 5;
+          goto exit;
+        }
 
         controlRegister = cd->cd_BoardAddr;
 
