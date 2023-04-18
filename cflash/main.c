@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
           if (*controlRegister & FLASHEN_BIT) {
             printf("Flash is enabled, copying ROM to RAM and disabling Flash\n");
-            CopyMemQuick((ULONG *)0xF00000,(ULONG *)0xF00000,1024*1024); // Copy Extended and Kick rom to RAM
+            CopyMem((ULONG *)0xF00000,(ULONG *)0xF00000,1024*1024); // Copy Extended and Kick rom to RAM
             printf("Switching to RAM now, good luck!\n");
             *controlRegister = (CTRL_SET | MAPRAMEN_BIT);
           }
