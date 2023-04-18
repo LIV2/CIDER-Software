@@ -38,7 +38,7 @@
 #define IDE_PROD_ID    6
 #define IDE_ROM_OFFSET 0x0
 
-#define CFLASH_VER 0
+#define CFLASH_VER 1
 
 struct Library *DosBase;
 struct ExecBase *SysBase;
@@ -89,9 +89,10 @@ int main(int argc, char *argv[])
           // Check that Kick Flash is disabled
 
           if (*controlRegister & FLASHEN_BIT) {
-            printf("Kick flash must be switched off to program\n");
-            rc = 5;
-            goto exit;
+            printf("Flash is enabled, copying ROM to RAM and disabling Flash\n");
+            CopyMemQuick((ULONG *)0xF00000,(ULONG *)0xF00000,1024*1024); // Copy Extended and Kick rom to RAM
+            printf("Switching to RAM now, good luck!\n");
+            *controlRegister = (CTRL_SET | MAPRAMEN_BIT);
           }
 
           selectSlot(config->programSlot); // Set the high/low bank select bit for the flash

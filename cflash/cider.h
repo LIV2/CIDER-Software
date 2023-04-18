@@ -18,6 +18,10 @@
 #define SET_BANKBIT 0x9000
 #define CLR_BANKBIT 0x8000
 
-#define BONUSEN_BIT 0x2000
-#define FLASHEN_BIT 0x4000
-#define BANKSEL_BIT 0x8000
+#define CTRL_SET    0x1000
+#define CTRL_CLR    0x0000
+
+#define BONUSEN_BIT  0x2000
+#define FLASHEN_BIT  0x4000
+#define MAPRAMEN_BIT 0x4000
+#define BANKSEL_BIT  0x8000
