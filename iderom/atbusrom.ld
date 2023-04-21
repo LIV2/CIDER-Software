@@ -1,9 +1,6 @@
 SECTIONS {
     rom = .;
-    .header 0x00: {
-      LONG(0x4C495632);
-    } = 2
-    .bootldr 0x04: {
+    .bootldr 0x00: {
         *(BOOTLDR)
     }
     .device 0x1000 : {

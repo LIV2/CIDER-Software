@@ -7,7 +7,6 @@
 VERSION      = 1
 REVISION     = 1
 DRIVEROFFSET = $2000
-        dc.w  $00
 *******  DiagStart  **************************************************
 DiagStart
         ; This is the DiagArea structure whose relative offset from
@@ -89,7 +88,6 @@ BootEntry
 *   This module will:
 *     - Load a driver from ROM.
 *     - Initialize it
-*     - Mount the drive(s)
 **********************************************************************
 Romtag
         dc.w    RTC_MATCHWORD      ; UWORD RT_MATCHWORD
@@ -109,11 +107,10 @@ MyConfigDev: dc.l 0
 Init:   movem.l d2-d7/a2-a6,-(sp)
 
         move.l  MyConfigDev(PC),a1
-        move.w  cd_Rom+er_InitDiagVec(a1),d1  ; Get rom offset
-        ror.l   #8,d1                         ; Divide by 8 for Z2 Nibble-wide
-        andi.l  #1,d1
-        move.l  #DRIVEROFFSET,d0              ; Add to Driver offset
-        add.l   d1,d0
+        move.w  cd_Rom+er_InitDiagVec(a1),d0  ; Get rom offset
+        ror.l   #8,d0                         ; If the rom offset is odd
+        andi.l  #1,d0                         ; Fix up the driver offset
+        addi.l  #DRIVEROFFSET,d0
 
         move.l  BoardBase(PC),a0
         bsr     _relocate

@@ -37,6 +37,9 @@ $(OBJDIR)/assets.o: assets.S $(OBJDIR)/bootnibbles ide_device/liv2ride.device
 $(PROGRAM): $(OBJDIR)/bootnibbles $(OBJDIR)/assets.o
 	$(LINKER) $(LINKFLAGS) -Trom.ld -o $@ $(OBJDIR)/assets.o
 
+$(PROGRAM)-atbus: $(OBJDIR)/bootnibbles $(OBJDIR)/assets.o
+	$(LINKER) $(LINKFLAGS) -Tatbusrom.ld -o $@ $(OBJDIR)/assets.o
+
 disk:
 	$(MAKE) -C disk all
 
