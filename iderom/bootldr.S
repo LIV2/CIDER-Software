@@ -107,11 +107,12 @@ MyConfigDev: dc.l 0
 Init:   movem.l d2-d7/a2-a6,-(sp)
 
         move.l  MyConfigDev(PC),a1
-        move.w  cd_Rom+er_InitDiagVec(a1),d0  ; Get rom offset
-        ror.l   #8,d0                         ; If the rom offset is odd
-        andi.l  #1,d0                         ; Fix up the driver offset
-        addi.l  #DRIVEROFFSET,d0
-
+        move.l  #DRIVEROFFSET,d0
+        move.w  cd_Rom+er_InitDiagVec(a1),d1  ; Get rom offset
+        cmp.l   #8,d1                         ; LIV2 board with even rom addrss?
+        beq     .even
+.odd    add.l   #1,d0                         ; No, AT-Bus style board with odd address
+.even  
         move.l  BoardBase(PC),a0
         bsr     _relocate
         tst.l   d0
