@@ -204,12 +204,20 @@ int main(int argc, char *argv[])
       }
 
       if (config->flash_ide_rom == true) {
-
+        void *ide_flashbase = NULL;
         struct ConfigDev *ide_configDev;
         if ((ide_configDev = FindConfigDev(NULL,IDE_MANUF_ID,IDE_PROD_ID))) {
 
+          ide_flashbase = ide_configDev->cd_BoardAddr;
+
+          if (ide_configDev->cd_BoardSize > 65536) {
+            // Newer version of the CIDER firmware give the IDE device a 128K block, with the top 64K dedicated to the Flash
+            // This means we can flash the IDE ROM without having to disable IDE
+            ide_flashbase += 65536;
+          }
+
           UBYTE manufId,devId;
-          if (ide_flash_init(&manufId,&devId,ide_configDev->cd_BoardAddr)) {
+          if (ide_flash_init(&manufId,&devId,(ULONG *)ide_flashbase)) {
 
             ULONG romSize = getFileSize(config->ide_rom_filename);
             if (romSize <= (0x10000 - IDE_ROM_OFFSET)/2) {
@@ -246,7 +254,7 @@ int main(int argc, char *argv[])
                 fprintf(stdout,"\n");
                 fflush(stdout);
 
-                fprintf(stdout,"Vefifying IDE ROM:     ");
+                fprintf(stdout,"Verifying IDE ROM:     ");
                 for (int i=0; i<romSize; i++) {
 
                   progress = (i*100)/(romSize-1);
@@ -257,7 +265,7 @@ int main(int argc, char *argv[])
                     lastProgress = progress;
                   }
                   sourcePtr = ((void *)buffer + i);
-                  destPtr = ((void *)ide_configDev->cd_BoardAddr + (i << 1));
+                  destPtr = ((void *)ide_flashbase + (i << 1));
                   if (*sourcePtr != *destPtr) {
                         printf("\nVerification failed at %06x - Expected %02X but read %02X\n",(int)destPtr,*sourcePtr,*destPtr);
                         return false;
@@ -277,7 +285,9 @@ int main(int argc, char *argv[])
 
           } else {
             printf("Error: IDE - Unknown Flash device Manufacturer: %02X Device: %02X\n", manufId, devId);
-            printf("Check that IDE is switched off and try again.\n");
+            if (ide_configDev->cd_BoardSize == 65535) {
+              printf("Turn IDE off and try again.\n");
+            }
           }          
         } else {
           printf("Could not find IDE board.\n");
