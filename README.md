@@ -7,7 +7,7 @@ This repository contains software utilities for the [CIDER](https://github.com/L
 - [cflash](https://github.com/LIV2/CIDER-Software/tree/main/cflash) A tool to manage the Kick Flash and update the IDE ROM
 - [iderom](https://github.com/LIV2/CIDER-Software/tree/main/iderom) The IDE device driver ROM
 
-## Downloading
+## Downloads
 Binaries are provided under [Releases](https://github.com/LIV2/CIDER-Software/releases)  
 * CIDER-IDE-Update.adf is a bootable floppy image that will update the IDE to the latest firmware version
 * CIDER-Software.adf and CIDER-Software.lha contain binaries for the tools in this repositiory
@@ -15,6 +15,7 @@ Binaries are provided under [Releases](https://github.com/LIV2/CIDER-Software/re
 ## Third-Party notice
 iderom - reloc.S: reloc.S is adapted from the [A4091](https://github.com/A4091/a4091-software) open-source driver and is Copyright Stefan Reinauer  
 liv2ride.device: mounter.c is adapted from the [A4091](https://github.com/A4091/a4091-software) open-source driver and is Copyright 2021-2022 Toni Wilen  
+liv2ride.device: The fast read/write routines for ATA devices are adapted from [Frédéric REQUIN](https://github.com/fredrequin)'s [at_apollo_device](https://github.com/fredrequin/at_apollo_device)  
 
 ## License
 All software contained that is not provided by a third-party is covered by a GPL 2.0 Only license  

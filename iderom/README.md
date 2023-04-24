@@ -11,6 +11,7 @@ You can install the latest version by booting the CIDER-IDE-Update.adf disk imag
 ## Third-Party notices
 iderom: reloc.S is adapted from the [A4091](https://github.com/A4091/a4091-software) open-source driver and is Copyright Stefan Reinauer  
 liv2ride.device: mounter.c is adapted from the [A4091](https://github.com/A4091/a4091-software) open-source driver and is Copyright 2021-2022 Toni Wilen
+liv2ride.device: The fast read/write routines for ATA devices are adapted from [Frédéric REQUIN](https://github.com/fredrequin)'s [at_apollo_device](https://github.com/fredrequin/at_apollo_device)  
 
 ## License
 All software contained that is not provided by a third-party is covered by a GPL 2.0 Only license  
