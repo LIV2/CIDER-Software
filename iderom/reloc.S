@@ -1,12 +1,18 @@
-; reloc
-; Modified from Open Source A4091.device reloc.S by Stefan Reinauer & Chris Hooper 
+; reloc.S
+; Modified from Open Source A4091.device by Stefan Reinauer and Chris Hooper - https://github.com/A4091/a4091-software
         INCLUDE "exec/memory.i"
         INCLUDE "lvo/exec_lib.i"
+
+        DEFINE BYTEWIDE
+
+        IFND ROM
+        section .text,code
+        ENDIF
 
 NUM_ENTRIES EQU 5
 
         ; API:
-        ; Z2 ROM access:
+        ; Zorro ROM access:
         ;   a0: rombase
         ;   d0: offset
         ; Memory (RAM) access:
@@ -74,7 +80,7 @@ _relocate
 
         ; We don't know this hunk
 .RelocateFail
-        IFD HAVE_ERRNO
+        IFD HAVE_RERRNO
         ; Save hunk number in rErrno as error code
         lea     _rErrno(pc),a0
         move.l  d0,(a0)
@@ -268,8 +274,8 @@ RomFetch
         lea     ReadHandle(pc),a1
         move.l  (a1),a0
 
-        tst.l   4(a1)      ; access type ZorroII?
-        bne.s   .RomFetchZ2
+        tst.l   4(a1)      ; access type Zorro?
+        bne.s   .RomFetchZ
 
         cmp.b   #3,d0
         bne.b   .RomFetchWord
@@ -279,13 +285,26 @@ RomFetch
         move.w  (a0)+,d0
         bra.s   .RomFetchDone
 
-.RomFetchZ2                ; access type is ZorroII
+.RomFetchZ                 ; access type is Zorro
         move.l  d0,d3
-.nextbyte
+.nextnip
         lsl.l   #8,d0
+        IFND BYTEWIDE
+        move.b  (a0),d1
+        and.l   #$f0,d1
+        move.b  2(a0),d2
+        and.l   #$f0,d2
+        lsr.w   #4,d2
+        or.b    d1,d2
+
+        move.b  d2,d0
+
+        addq    #4,a0
+        ELSE
         move.b  (a0),d0
         addq    #2,a0
-        dbra    d3,.nextbyte
+        ENDIF
+        dbra    d3,.nextnip
 
 .RomFetchDone
         move.l  a0,(a1)
@@ -298,13 +317,14 @@ InitHandle
         ; nibble mapped nature of the AutoConfig ROM.
         ; ROM_ADDRESS is passed in a0
         ; ROM_OFFSET is passed in d0
-
-        ;lsl.l   #2,d0
+        IFND BYTEWIDE
+        lsl.l   #2,d0
+        ENDIF
 
         add.l   d0,a0
         lea     ReadHandle(pc),a1
         move.l  a0,(a1)  ; memory location passed in a0
-        move.l  d0,4(a1) ; Set access type: 0 = memory, Z2 otherwise
+        move.l  d0,4(a1) ; Set access type: 0 = memory, Zorro otherwise
 
         moveq.l #(8*NUM_ENTRIES),d0
         move.l  #MEMF_PUBLIC|MEMF_CLEAR,d1
@@ -315,7 +335,7 @@ InitHandle
 
 ReadHandle
         dc.l    0 ; Current address
-        dc.l    0 ; 0=memory, otherwise Z2
+        dc.l    0 ; 0=memory, otherwise Zorro
 
 pHunks
         dc.l    0
