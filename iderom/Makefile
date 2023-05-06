@@ -1,7 +1,7 @@
 PROGRAM=cider-ide.rom
 INCLUDE=/opt/amiga/m68k-amigaos/ndk-include
 AS=vasmm68k_mot
-ASFLAGS=-Fhunk -I$(INCLUDE) -quiet -align
+ASFLAGS=-Fhunk -I$(INCLUDE) -quiet -align -DROM -DBYTEWIDE
 LINKER=vlink
 LINKFLAGS=-brawbin1 -s -sc -sd -mrel -lamiga -lauto -L/opt/amiga/m68k-amigaos/vbcc/lib
 OBJDIR=obj

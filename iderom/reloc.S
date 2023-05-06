@@ -3,8 +3,6 @@
         INCLUDE "exec/memory.i"
         INCLUDE "lvo/exec_lib.i"
 
-        DEFINE BYTEWIDE
-
         IFND ROM
         section .text,code
         ENDIF
