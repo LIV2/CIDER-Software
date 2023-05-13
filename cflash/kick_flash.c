@@ -175,7 +175,7 @@ void kick_flash_erase_bank(int bank) {
     }
 
     // Erase the smaller blocks
-    block += 32767;
+    block += 32768;
     kick_flash_erase_block(block);
     block += 8192;
     kick_flash_erase_block(block);
