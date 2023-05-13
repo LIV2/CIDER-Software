@@ -6,7 +6,7 @@ LINKER=vlink
 LINKFLAGS=-brawbin1 -s -sc -sd -mrel -lamiga -lauto -L/opt/amiga/m68k-amigaos/vbcc/lib
 OBJDIR=obj
 
-.PHONY: all clean rom ide_device/liv2ride.device disk
+.PHONY: all clean rom ide_device/lide.device disk
 
 SRCS = bootldr.S \
        endrom.S
@@ -29,10 +29,10 @@ $(OBJDIR)/bootnibbles: $(OBJDIR)/bootldr $(OBJDIR)/mungerom
 	@mkdir -p $(OBJDIR)
 	./obj/mungerom
 
-ide_device/liv2ride.device:
+ide_device/lide.device:
 	$(MAKE) -C ide_device all
 
-$(OBJDIR)/assets.o: assets.S $(OBJDIR)/bootnibbles ide_device/liv2ride.device
+$(OBJDIR)/assets.o: assets.S $(OBJDIR)/bootnibbles ide_device/lide.device
 
 $(PROGRAM): $(OBJDIR)/bootnibbles $(OBJDIR)/assets.o
 	$(LINKER) $(LINKFLAGS) -Trom.ld -o $@ $(OBJDIR)/assets.o
