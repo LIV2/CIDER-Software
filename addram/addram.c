@@ -220,7 +220,7 @@ ULONG sizeBonusRam(struct Config *config) {
  * Poke the control register to enable Bonus RAM
 */
 void enableBonusRam() {
-  *ConfigRegister |= BONUSRAM_EN | SET_FLAG;
+  *ConfigRegister = BONUSRAM_EN | SET_FLAG;
 }
 
 /**
@@ -229,7 +229,7 @@ void enableBonusRam() {
  * Poke the control register to disable Bonus RAM
 */
 void disableBonusRam() {
-  *ConfigRegister |= BONUSRAM_EN;
+  *ConfigRegister = BONUSRAM_EN;
 }
 
 /**
