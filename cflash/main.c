@@ -44,7 +44,7 @@ struct Library *DosBase;
 struct ExecBase *SysBase;
 struct ExpansionBase *ExpansionBase = NULL;
 
-UWORD *controlRegister;
+volatile UWORD *controlRegister;
 
 extern void *flashbase;
 
