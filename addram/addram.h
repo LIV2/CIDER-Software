@@ -32,8 +32,8 @@ struct ConfigDev* FindConfigDev(struct ConfigDev*, LONG, LONG);
 
 // End fixes
 #define BOARDSTRING "GottaGoFast!!!\0"
-#define BOARD_MANUF 2011
-#define BOARD_PROD  74
+#define BOARD_MANUF 5194
+#define BOARD_PROD  6
 #define BONUSRAM_EN 1<<13
 #define SET_FLAG    1<<12
 

@@ -32,10 +32,10 @@
 #include "cider.h"
 #include "constants.h"
 
-#define MANUF_ID       2011
-#define PROD_ID        74
-#define IDE_MANUF_ID   0x082C
-#define IDE_PROD_ID    6
+#define MANUF_ID       5194
+#define PROD_ID        6
+#define IDE_MANUF_ID   5194
+#define IDE_PROD_ID    5
 #define IDE_ROM_OFFSET 0x0
 
 #define CFLASH_VER 1

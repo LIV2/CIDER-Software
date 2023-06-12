@@ -26,9 +26,9 @@
   include libraries/configvars.i
   include hardware/cia.i
 
-ManufId = 2011
-MemDevId  = 72
-CtrlDevId = 74
+ManufId = 5194
+MemDevId  = 4
+CtrlDevId = 6
 
 BonusEna  = $3000
 BonusBase = $A00000
