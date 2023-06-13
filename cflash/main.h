@@ -24,8 +24,8 @@
 struct ConfigDev* FindConfigDev(struct ConfigDev*, LONG, LONG);
 
 ULONG getFileSize(char *);
-void copyFileToFlash(char *, ULONG, ULONG, bool);
-void copyBufToFlash(ULONG *, ULONG, ULONG, bool);
+bool copyFileToFlash(char *, ULONG, ULONG, bool);
+bool copyBufToFlash(ULONG *, ULONG, ULONG, bool);
 void erase_bank(ULONG,UBYTE);
 void erase_chip();
 bool verifyBank(ULONG *, ULONG, ULONG);

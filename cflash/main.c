@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 
         if (hw_ver > CFLASH_VER) {
           printf("A newer version of cflash is needed for this CIDER firmware version.\n");
-          rc = 0;
+          rc = 5;
           goto exit;
         } else if (hw_ver < CFLASH_VER) {
           printf("The CIDER firmware must be upgraded to be compatible with this version of cflash\n");
@@ -109,6 +109,7 @@ int main(int argc, char *argv[])
 
               printf("Error: Unknown Flash device Manufacturer: %04X Device: %04X\n", manufacturerId, deviceId);
               printf("Check that ROM overlay is switched off and try again.\n");
+              rc = 5;
 
             } else {
 
@@ -147,18 +148,27 @@ int main(int argc, char *argv[])
                   if (config->kick_source == SOURCE_ROM) {
                     erase_bank(FLASH_BANK_1,config->programSlot);
                     printf("Copying Kickstart ROM\n");
-                    copyBufToFlash((void *)0xF80000,FLASH_BANK_1,ROM_512K,config->skipVerify);
+                    if (copyBufToFlash((void *)0xF80000,FLASH_BANK_1,ROM_512K,config->skipVerify) == false) {
+                      rc = 5;
+                      goto exit;
+                    }
                   } else if (config->kick_source == SOURCE_FILE) {
                     ULONG romSize = 0;
                     printf("Flashing kick file %s\n",config->ks_filename);
                     if ((romSize = getFileSize(config->ks_filename)) != 0) {
                       if (romSize == ROM_256K || romSize == ROM_512K ) {
                         erase_bank(FLASH_BANK_1,config->programSlot);
-                        copyFileToFlash(config->ks_filename,FLASH_BANK_1,romSize,config->skipVerify);
+                        if (copyFileToFlash(config->ks_filename,FLASH_BANK_1,romSize,config->skipVerify) == false) {
+                          rc = 5;
+                          goto exit;
+                        }
                       } else if (romSize == ROM_1M) {
                         erase_bank(FLASH_BANK_0,config->programSlot);
                         erase_bank(FLASH_BANK_1,config->programSlot);
-                        copyFileToFlash(config->ks_filename,FLASH_BANK_0,romSize,config->skipVerify);
+                        if (copyFileToFlash(config->ks_filename,FLASH_BANK_0,romSize,config->skipVerify) == false) {
+                          rc = 5;
+                          goto exit;
+                        }
                       } else {
                         printf("Bad file size, 256K/512K/1M ROM required.\n");
                         rc = 5;
@@ -169,14 +179,20 @@ int main(int argc, char *argv[])
                   if (config->ext_source == SOURCE_ROM) {
                     erase_bank(FLASH_BANK_0,config->programSlot);
                     printf("Copying Extended ROM\n");
-                    copyBufToFlash((void *)0xF00000,FLASH_BANK_0,ROM_256K,config->skipVerify);
+                    if (copyBufToFlash((void *)0xF00000,FLASH_BANK_0,ROM_256K,config->skipVerify) == false) {
+                      rc = 5;
+                      goto exit;
+                    }
                   } else if (config->ext_source == SOURCE_FILE) {
                     ULONG romSize = 0;
                     printf("Flashing ext file %s\n",config->ext_filename);
                     if ((romSize = getFileSize(config->ext_filename)) != 0) {
                       if (romSize == ROM_256K || romSize == ROM_512K ) {
                         erase_bank(FLASH_BANK_0,config->programSlot);
-                        copyFileToFlash(config->ext_filename,FLASH_BANK_0,romSize,config->skipVerify);
+                        if (copyFileToFlash(config->ext_filename,FLASH_BANK_0,romSize,config->skipVerify) == false) {
+                          rc = 5;
+                          goto exit;
+                        }
                       } else {
                         printf("Bad file size, 256K/512K EXT ROM required.\n");
                         rc = 5;
@@ -268,7 +284,8 @@ int main(int argc, char *argv[])
                   destPtr = ((void *)ide_flashbase + (i << 1));
                   if (*sourcePtr != *destPtr) {
                         printf("\nVerification failed at %06x - Expected %02X but read %02X\n",(int)destPtr,*sourcePtr,*destPtr);
-                        return false;
+                        rc = 5;
+                        goto exit;
                       }
 
                 }
@@ -281,6 +298,7 @@ int main(int argc, char *argv[])
 
             } else {
               printf("File too large to fit IDE ROM\n");
+              rc = 5;
             }
 
           } else {
@@ -288,9 +306,11 @@ int main(int argc, char *argv[])
             if (ide_configDev->cd_BoardSize == 65535) {
               printf("Turn IDE off and try again.\n");
             }
+            rc = 5;
           }          
         } else {
           printf("Could not find IDE board.\n");
+          rc = 5;
         }
       }
     } else {
@@ -411,15 +431,16 @@ APTR readFileToBuf(char *filename) {
  * @param romSize Size in bytes of the source
  * @param skipVerify Skip verification
 */
-void copyFileToFlash(char *filename, ULONG destination, ULONG romSize, bool skipVerify) {
+bool copyFileToFlash(char *filename, ULONG destination, ULONG romSize, bool skipVerify) {
   APTR buffer;
+  bool success = true;
 
   if ((buffer = readFileToBuf(filename)) != NULL) {
-    copyBufToFlash(buffer,destination,romSize,skipVerify);
+    success = copyBufToFlash(buffer,destination,romSize,skipVerify);
     FreeMem(buffer,romSize);
   }
 
-  return;
+  return success;
 }
 
 /**
@@ -431,7 +452,8 @@ void copyFileToFlash(char *filename, ULONG destination, ULONG romSize, bool skip
  * @param romSize Size in bytes of the source
  * @param skipVerify Skip verification
 */
-void copyBufToFlash(ULONG *source, ULONG destination, ULONG romSize, bool skipVerify) {
+bool copyBufToFlash(ULONG *source, ULONG destination, ULONG romSize, bool skipVerify) {
+  bool success = true;
   int progress = 0;
   int lastProgress = 1;
 
@@ -460,8 +482,10 @@ void copyBufToFlash(ULONG *source, ULONG destination, ULONG romSize, bool skipVe
   kick_flash_unlock_bypass_reset(); // Return to read mode
   printf("\n");
   if (skipVerify == false) {
-    verifyBank(source,destination,romSize);
+    success = verifyBank(source,destination,romSize);
   }
+
+  return success;
 }
 
 /** verifyBank
