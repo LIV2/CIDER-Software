@@ -27,4 +27,6 @@
 #define FLASH_BANK_0  0x000000
 #define FLASH_BANK_1  0x080000
 
+#define KICK_BASE 0xF80000
+#define EXT_BASE  0xF00000
 #endif

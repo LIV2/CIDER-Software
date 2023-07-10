@@ -122,14 +122,14 @@ int main(int argc, char *argv[])
                 case OP_VERIFY:
                   // Verify Kickstart
                   if (config->kick_source == SOURCE_ROM) {
-                    rc = (verifyBank((ULONG *)0xF80000,FLASH_BANK_1,ROM_512K)) ? 0 : 5;
+                    rc = (verifyBank((ULONG *)KICK_BASE,FLASH_BANK_1,ROM_512K)) ? 0 : 5;
                   } else if (config->kick_source == SOURCE_FILE) {
                     rc = (verifyFile(config->ks_filename,FLASH_BANK_1)) ? 0 : 5;
                   }
 
                   // Verify Extended ROM
                   if (config->ext_source == SOURCE_ROM) {
-                    rc = (verifyBank((ULONG *)0xF00000,FLASH_BANK_0,ROM_256K)) ? 0 : 5;
+                    rc = (verifyBank((ULONG *)EXT_BASE,FLASH_BANK_0,ROM_256K)) ? 0 : 5;
                   } else if (config->ext_source == SOURCE_FILE) {
                     rc = (verifyFile(config->ext_filename,FLASH_BANK_0)) ? 0 : 5;
                   }
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
                   if (config->kick_source == SOURCE_ROM) {
                     erase_bank(FLASH_BANK_1,config->programSlot);
                     printf("Copying Kickstart ROM\n");
-                    if (copyBufToFlash((void *)0xF80000,FLASH_BANK_1,ROM_512K,config->skipVerify) == false) {
+                    if (copyBufToFlash((void *)KICK_BASE,FLASH_BANK_1,ROM_512K,config->skipVerify) == false) {
                       rc = 5;
                       goto exit;
                     }
@@ -177,9 +177,14 @@ int main(int argc, char *argv[])
                   }
                   // Ext ROM flash
                   if (config->ext_source == SOURCE_ROM) {
+                    if (*((UWORD *)EXT_BASE + 1) != 0x4EF9) {
+                      printf("Extended ROM not found - Check that JP15 is connected and that both A500 mode and Kick Flash are disabled.\n");
+                      rc = 5;
+                      goto exit;
+                    }
                     erase_bank(FLASH_BANK_0,config->programSlot);
                     printf("Copying Extended ROM\n");
-                    if (copyBufToFlash((void *)0xF00000,FLASH_BANK_0,ROM_256K,config->skipVerify) == false) {
+                    if (copyBufToFlash((ULONG *)EXT_BASE,FLASH_BANK_0,ROM_256K,config->skipVerify) == false) {
                       rc = 5;
                       goto exit;
                     }
