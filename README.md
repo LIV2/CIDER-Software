@@ -5,7 +5,7 @@ This repository contains software utilities for the [CIDER](https://github.com/L
 - [addram](https://github.com/LIV2/CIDER-Software/tree/main/addram) Adds the A0/Bonus RAM to the system
 - [bootrom](https://github.com/LIV2/CIDER-Software/tree/main/bootrom) A Kickstart module to add the Bonus RAM to the system at boot
 - [cflash](https://github.com/LIV2/CIDER-Software/tree/main/cflash) A tool to manage the Kick Flash and update the IDE ROM
-- [iderom](https://github.com/LIV2/CIDER-Software/tree/main/iderom) The IDE device driver ROM
+- [ideupdate](https://github.com/LIV2/CIDER-Software/tree/main/ideupdate) IDE ROM Update disk
 
 ## Downloads
 Binaries are provided under [Releases](https://github.com/LIV2/CIDER-Software/releases)  
@@ -13,9 +13,9 @@ Binaries are provided under [Releases](https://github.com/LIV2/CIDER-Software/re
 * CIDER-Software.adf and CIDER-Software.lha contain binaries for the tools in this repositiory
 
 ## Third-Party notice
-iderom - reloc.S: reloc.S is adapted from the [A4091](https://github.com/A4091/a4091-software) open-source driver and is Copyright Stefan Reinauer  
-liv2ride.device: mounter.c is adapted from the [A4091](https://github.com/A4091/a4091-software) open-source driver and is Copyright 2021-2022 Toni Wilen  
-liv2ride.device: The fast read/write routines for ATA devices are adapted from [Frédéric REQUIN](https://github.com/fredrequin)'s [at_apollo_device](https://github.com/fredrequin/at_apollo_device)  
+lide.device - reloc.S: reloc.S is adapted from the [A4091](https://github.com/A4091/a4091-software) open-source driver and is Copyright Stefan Reinauer  
+lide.device: mounter.c is adapted from the [A4091](https://github.com/A4091/a4091-software) open-source driver and is Copyright 2021-2022 Toni Wilen  
+lide.device: The fast read/write routines for ATA devices are adapted from [Frédéric REQUIN](https://github.com/fredrequin)'s [at_apollo_device](https://github.com/fredrequin/at_apollo_device)  
 
 ## License
 All software contained that is not provided by a third-party is covered by a GPL 2.0 Only license  
