@@ -5,7 +5,7 @@ permissions:
 on:
   push:
     tags:
-      - "Release_**"
+      - "Release-**"
   workflow_dispatch:
 
 jobs:
