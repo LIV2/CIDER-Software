@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: make software package
 
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v4.4
         with:
           name: software
           path: artifacts/*
@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4.1.8
         with:
           path: artifacts
       - name: release
