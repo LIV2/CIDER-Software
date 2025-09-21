@@ -1,14 +1,34 @@
 # CIDER Software
-This repository contains software utilities for the [CIDER](https://github.com/LIV2/CIDER) CDTV Expansion
+This repository contains software utilities for the [CIDER](https://github.com/LIV2/CIDER) expansion board for Amiga computers.
 
-## Contents
-- [addram](https://github.com/LIV2/CIDER-Software/tree/main/addram) Adds the A0/Bonus RAM to the system
-- [bootrom](https://github.com/LIV2/CIDER-Software/tree/main/bootrom) A Kickstart module to add the Bonus RAM to the system at boot
-- [cflash](https://github.com/LIV2/CIDER-Software/tree/main/cflash) A tool to manage the Kick Flash and update the IDE ROM
+## What is CIDER?
+
+CIDER is an expansion board for the Commodore CDTV that significantly enhances its capabilities:
+- **11.37 MB Fast RAM**: Including 1.5 MB Ranger RAM, 8 MB standard Fast RAM, and 1.87 MB Bonus RAM at $A00000
+- **IDE Interface**: Built-in IDE controller with autoboot driver for hard drives and other storage
+- **Dual Kickstart Flash ROM**: Programmable flash memory for multiple Kickstart and Extended ROMs
+- **In-system programming**: All flash components can be updated without removing the board
+- **CDTV integration**: Plugs into the CDTV's diagnostic port for seamless integration
+
+## Tools Overview
+
+- **[cflash](https://github.com/LIV2/CIDER-Software/tree/main/cflash#cflash)** - Flash ROM programming tool for Kickstart and Extended ROMs
+- **[addram](https://github.com/LIV2/CIDER-Software/tree/main/addram#addram)** - Manual tool to add BonusRAM to your system with configurable options
+- **[bootrom](https://github.com/LIV2/CIDER-Software/tree/main/bootrom#cider-bootrom)** - Automatic resident module that adds BonusRAM at boot time
+
+## Quick Start
+
+**New to CIDER?** Choose the right tool for your needs:
+
+- **Want automatic memory activation?** → Use **bootrom** (integrate into Extended ROM for set-and-forget operation)
+- **Need control over memory settings?** → Use **addram** (command-line tool with options for testing and configuration)
+- **Want to update ROMs?** → Use **cflash** (program new Kickstart/Extended ROMs to flash memory)
+
+Each tool has comprehensive documentation with step-by-step instructions for both beginners and advanced users.
 
 ## Downloads
 Binaries are provided under [Releases](https://github.com/LIV2/CIDER-Software/releases)  
-* CIDER-Software.adf and CIDER-Software.lha contain binaries for the tools in this repositiory
+* CIDER-Software.adf and CIDER-Software.lha contain binaries for the tools in this repository
 * IDE firmware can be programmed using the lastest [lide-update adf](https://github.com/LIV2/LIDE.device/releases/latest)
 
 ## Third-Party notice

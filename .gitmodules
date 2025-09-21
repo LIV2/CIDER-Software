@@ -1,3 +1,0 @@
-[submodule "iderom/ide_device"]
-	path = ideupdate/lide.device
-	url = git@github.com:LIV2/lide.device.git
