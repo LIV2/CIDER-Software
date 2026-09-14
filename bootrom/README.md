@@ -25,7 +25,7 @@ BootROM integrates into the Amiga's boot process as a resident module:
 
 ### Memory Layout
 - **Address Range**: $A00000 to $BEFFFF (up to ~2MB)
-- **Type**: Fast RAM (32-bit, no wait states)
+- **Type**: Fast RAM
 - **Integration**: Merged with existing Fast RAM when possible
 - **Compatibility**: Works with all Amiga software that supports Fast RAM
 
@@ -94,12 +94,6 @@ Look for:
 
 ## Technical Details
 
-### Resident Module Integration
-- **Priority**: Runs during cold start initialization
-- **Type**: NT_LIBRARY resident module
-- **Activation**: Automatic during system boot
-- **Dependencies**: Requires expansion.library
-
 ### Memory Testing Method
 BootROM uses safe, non-destructive memory testing:
 - Tests at offset +$B00 from each 64KB boundary
@@ -116,7 +110,6 @@ BootROM uses safe, non-destructive memory testing:
 On older Kickstart versions, BootROM provides additional optimizations:
 - Sets Ranger RAM priority to -5 for better allocation order
 - Ensures proper memory type flags are set
-- Improves overall memory management behavior
 
 ## Troubleshooting
 

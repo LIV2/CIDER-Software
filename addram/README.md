@@ -126,13 +126,12 @@ This will:
 
 ### Memory Layout
 - **Address Range**: $A00000 to $BEFFFF (up to ~2MB)
-- **Type**: Fast RAM (32-bit, no wait states)
+- **Type**: Fast RAM
 - **Compatibility**: Works with all Amiga software that supports Fast RAM
 
 ### How It Works
 1. CIDER provides RAM in the $A00000-$BEFFFF address space
-2. For RAM-equipped addresses, it provides fast memory access
-3. This provides additional memory in previously unused address space
+2. This provides additional memory in previously unused address space
 
 ## Troubleshooting
 
